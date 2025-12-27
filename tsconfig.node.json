@@ -1,0 +1,21 @@
+{
+  "extends": "./tsconfig.json",
+  "include": [
+    "alchemy.run.ts",
+    "types/**/*.ts",
+    "vite.config.ts",
+    "app/env.d.ts",
+    "workers/**/*.ts"
+  ],
+  "compilerOptions": {
+    "composite": true,
+    "strict": true,
+    "types": [
+      "@cloudflare/workers-types",
+    ],
+    "lib": ["ES2022"],
+    "target": "ES2022",
+    "module": "ES2022",
+    "moduleResolution": "bundler"
+  }
+}
