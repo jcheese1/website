@@ -12,6 +12,8 @@ const projects = [
   { name: "Marketplace", url: "https://marketplace.archive.jcheese.xyz/" },
   { name: "Smolverse", url: "https://smb.archive.jcheese.xyz/" },
   { name: "Smolcoin", url: "https://coin.archive.jcheese.xyz/" },
+  { name: "Agent Creator", url: "https://treasure.lol/agents" },
+  { name: "AI Frens", url: "https://aifrens.lol/" }
 ];
 
 const skills = [
