@@ -11,10 +11,10 @@ const fileStateStore = (scope: Scope) => new FileSystemStateStore(scope);
 
 const cloudflareStateStore = (scope: Scope) => new CloudflareStateStore(scope, {
   stateToken: alchemy.secret(process.env.ALCHEMY_STATE_TOKEN),
-  scriptName: `react-router-alchemy-cloudflare-app-state-service-${stage === "prod" ? "prod" : "dev"}`
+  scriptName: `jcheese-website-state-service-${stage === "prod" ? "prod" : "dev"}`
 });
 
-const app = await alchemy("react-router-alchemy-cloudflare-app", {
+const app = await alchemy("jcheese-website", {
   stage,
   password: process.env.ALCHEMY_PASSWORD,
   stateStore: stage === "dev" ? fileStateStore : cloudflareStateStore,

@@ -1,6 +1,6 @@
 {
   "type": "module",
-  "name": "react-router-alchemy-cloudflare-app",
+  "name": "jcheese-website",
   "private": true,
   "scripts": {
     "build": "react-router build",
