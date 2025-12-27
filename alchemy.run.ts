@@ -1,10 +1,9 @@
 /// <reference types="@types/bun" />
 
 import alchemy, { Scope } from "alchemy";
-import { DurableObjectNamespace, ReactRouter } from "alchemy/cloudflare";
+import { ReactRouter } from "alchemy/cloudflare";
 import { CloudflareStateStore, FileSystemStateStore } from "alchemy/state";
 import { GitHubComment } from "alchemy/github";
-import { Counter } from "./workers/do/counter";
 
 const stage = process.env.STAGE ?? "dev";
 
@@ -21,18 +20,9 @@ const app = await alchemy("react-router-alchemy-cloudflare-app", {
   stateStore: stage === "dev" ? fileStateStore : cloudflareStateStore,
 });
 
-const counter = DurableObjectNamespace<Counter>("counter", {
-  className: "Counter",
-  sqlite: true
-})
 
 export const worker = await ReactRouter("website", {
   adopt: true,
-  bindings: {
-    PUBLIC_VALUE_FROM_CLOUDFLARE: process.env.PUBLIC_VALUE_FROM_CLOUDFLARE || "value1",
-    SECRET: alchemy.secret(process.env.SECRET),
-    COUNTER: counter
-  },
 });
 
 

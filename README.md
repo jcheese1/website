@@ -83,6 +83,10 @@ CLOUDFLARE_EMAIL=your-cloudflare-email
 
 in Settings -> Secrets -> Actions -> New repository secret.
 
+```sh
+gh secret set -f .env
+```
+
 Now add 'production' and 'staging' environments in github as well, by going to Settings -> Environments -> New environment. Add secrets there. You will no longer manage secrets in the workers dashboard, it will all be consolidated here.
 
 all preview environments (PRs) will use the staging environment variable.
