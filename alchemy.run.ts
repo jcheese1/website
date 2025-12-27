@@ -23,6 +23,9 @@ const app = await alchemy("jcheese-website", {
 
 export const worker = await ReactRouter("website", {
   adopt: true,
+  bindings: {
+    SESSION_SECRET: alchemy.secret(process.env.SESSION_SECRET),
+  }
 });
 
 
