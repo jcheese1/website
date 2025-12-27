@@ -28,10 +28,10 @@ const skills = [
 export default function Home() {
   return (
     <main className="min-h-screen flex flex-col justify-center px-6 py-12 max-w-lg mx-auto">
-      <h1 className="text-3xl font-medium tracking-tight text-stone-900">
+      <h1 className="text-3xl font-medium tracking-tight text-orange-500">
         jcheese
       </h1>
-      <p className="mt-3 text-stone-500 leading-relaxed">
+      <p className="mt-3 text-stone-300 leading-relaxed">
         Full stack engineer with 8 years exp. Built web3, games, and AI-driven
         products at TreasureDAO. Passion for design and serverless edge.
       </p>
@@ -40,7 +40,7 @@ export default function Home() {
         {skills.map((skill) => (
           <span
             key={skill}
-            className="text-xs px-2 py-1 rounded bg-stone-200 text-stone-600"
+            className="text-xs px-2 py-1 rounded bg-orange-500/10 text-orange-400"
           >
             {skill}
           </span>
@@ -48,7 +48,7 @@ export default function Home() {
       </div>
 
       <nav className="mt-10">
-        <h2 className="text-xs uppercase tracking-widest text-stone-400 mb-4">
+        <h2 className="text-xs uppercase tracking-widest text-stone-500 mb-4">
           Archive / My Work
         </h2>
         <ul className="space-y-2">
@@ -58,12 +58,12 @@ export default function Home() {
                 href={project.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group flex items-center gap-2 text-stone-600 hover:text-stone-900 transition-colors"
+                className="group flex items-center gap-2 text-stone-400 hover:text-orange-400 transition-colors"
               >
                 <span className="group-hover:underline underline-offset-2">
                   {project.name}
                 </span>
-                <span className="text-stone-300 group-hover:translate-x-0.5 transition-transform">
+                <span className="text-stone-600 group-hover:translate-x-0.5 transition-transform">
                   →
                 </span>
               </a>
