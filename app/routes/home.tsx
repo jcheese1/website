@@ -30,21 +30,13 @@ const allVideos = [
   aifrensMovie,
 ];
 
-export function links(): Route.LinkDescriptors {
-  return allVideos.map((video) => ({
+export const links: Route.LinksFunction = () =>
+  allVideos.map((video) => ({
     rel: "preload",
     href: video,
     as: "video",
     type: "video/webm",
   }));
-}
-
-export function meta({}: Route.MetaArgs) {
-  return [
-    { title: "jcheese" },
-    { name: "description", content: "this is jcheese's website" },
-  ];
-}
 
 export async function loader({ request }: Route.LoaderArgs) {
   const session = await getSession(request.headers.get("Cookie"));
@@ -221,7 +213,7 @@ export default function Home({ loaderData }: Route.ComponentProps) {
           height="200%"
           x="-0.75"
           y="-0.75"
-          color-interpolation-filters="sRGB"
+          colorInterpolationFilters="sRGB"
         >
           <feOffset in="SourceGraphic" result="source-copy" />
           <feColorMatrix
