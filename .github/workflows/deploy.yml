@@ -40,7 +40,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_REPOSITORY_OWNER: ${{ github.repository_owner }}
           GITHUB_REPOSITORY_NAME: ${{ github.event.repository.name }}
-          SECRET: ${{ secrets.SECRET }}
+          SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
   cleanup:
     runs-on: ubuntu-latest
     if: ${{ github.event.action == 'closed' }}
