@@ -89,6 +89,8 @@ gh secret set -f .env (--env production | --env staging)
 
 Now add 'production' and 'staging' environments in github as well, by going to Settings -> Environments -> New environment. Add secrets there. You will no longer manage secrets in the workers dashboard, it will all be consolidated here.
 
+Make sure to add the secrets to deploy.yml as well.
+
 all preview environments (PRs) will use the staging environment variable.
 
 Now add the newly added secrets to the github actions workflow under `env`.
