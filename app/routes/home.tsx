@@ -74,7 +74,8 @@ export async function action({ request }: Route.ActionArgs) {
   const formData = await request.formData();
   const session = await getSession(request.headers.get("Cookie"));
   session.set("lang", formData.get("lang") as "en" | "ja");
-  return redirect(`/`, {
+  const url = new URL(request.url);
+  return redirect(`${url.pathname}${url.search}`, {
     headers: {
       "Set-Cookie": await commitSession(session),
     },
