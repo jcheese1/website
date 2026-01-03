@@ -1,3 +1,5 @@
+import { ScrollArea } from "@base-ui/react";
+import { Dialog as BaseDialog } from "@base-ui/react/dialog";
 import {
   AnimatePresence,
   clamp,
@@ -9,15 +11,24 @@ import {
   useVelocity,
 } from "motion/react";
 import { Cursor, usePointerPosition } from "motion-plus/react";
-import { useState } from "react";
-import { redirect, useFetcher } from "react-router";
+import { useId, useRef, useState } from "react";
+import { redirect, useFetcher, useLoaderData } from "react-router";
 import agentCreatorMovie from "~/assets/agent-creator.webm";
 import aifrensMovie from "~/assets/aifrens.webm";
 import bwMovie from "~/assets/bw.webm";
 import mpMovie from "~/assets/mp.webm";
 import smbMovie from "~/assets/smb.webm";
 import smolcoinMovie from "~/assets/smolcoin.webm";
-
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "~/components/ui/sheet";
+import type { LocalizedWorkExperience } from "~/resume";
+import { getLocalizedWorkExperiences, workExperiences } from "~/resume";
 import { commitSession, getSession } from "~/sessions/lang";
 import type { Route } from "./+types/home";
 
@@ -40,8 +51,23 @@ export const links: Route.LinksFunction = () =>
 
 export async function loader({ request }: Route.LoaderArgs) {
   const session = await getSession(request.headers.get("Cookie"));
+  const url = new URL(request.url);
+  const showAll = url.searchParams.get("showAll") === "true";
+  const lang = session.get("lang") || "en";
 
-  return { lang: session.get("lang") || "en" };
+  const filteredWorkExperiences = showAll
+    ? workExperiences
+    : workExperiences.filter((experience) => !experience.defaultHidden);
+
+  const localizedWorkExperiences = getLocalizedWorkExperiences(
+    filteredWorkExperiences,
+    lang,
+  );
+
+  return {
+    lang,
+    filteredWorkExperiences: localizedWorkExperiences,
+  };
 }
 
 export async function action({ request }: Route.ActionArgs) {
@@ -103,14 +129,112 @@ const archiveText = {
   ja: "アーカイブ / 私の作品",
 } as const;
 
+const workExperienceDialog = BaseDialog.createHandle<LocalizedWorkExperience>();
+
 export default function Home({ loaderData }: Route.ComponentProps) {
+  const { filteredWorkExperiences } = loaderData;
   const fetcher = useFetcher();
   const optimisticLang = fetcher.formData?.get("lang") as "en" | "ja" | null;
   const lang = optimisticLang || loaderData.lang;
+  const mainRef = useRef<HTMLDivElement>(null);
 
   return (
-    <>
-      <main className="relative mx-auto flex min-h-screen max-w-lg flex-col justify-center px-6 py-12">
+    <div className="grid">
+      <div className="relative [grid-area:1/1]">
+        <Timeline />
+        {filteredWorkExperiences.map((experience, index) => {
+          const previousDate =
+            filteredWorkExperiences[index - 1]?.startDate ??
+            new Date().getFullYear();
+
+          return (
+            <article
+              style={
+                {
+                  "--previous-date": previousDate,
+                  "--current-date": experience.startDate,
+                } as React.CSSProperties
+              }
+              key={experience.company}
+              className="pt-24 pb-[calc((var(--previous-date)-var(--current-date))*58px)]"
+            >
+              <header className="relative">
+                <div className="absolute top-0 left-[max(-0.5rem,calc(40%-18.125rem))] z-50 flex h-4 items-center justify-end gap-x-2">
+                  <div className="h-0.25 w-3.5 bg-stone-400 lg:-mr-3.5 xl:mr-0 xl:bg-stone-300" />
+                  <div className="inline-flex">
+                    <time className="font-medium text-white/40 text-xs">
+                      {experience.startDate}
+                    </time>
+                  </div>
+                  <SheetTrigger
+                    payload={experience}
+                    handle={workExperienceDialog}
+                    render={
+                      <button className="absolute inset-0 size-full">
+                        <span className="sr-only">Select this experience</span>
+                      </button>
+                    }
+                  />
+                </div>
+              </header>
+            </article>
+          );
+        })}
+      </div>
+      <main
+        ref={mainRef}
+        className="relative mx-auto flex min-h-screen max-w-lg flex-col justify-center px-16 py-12 [grid-area:1/1] sm:px-6"
+      >
+        <Sheet<LocalizedWorkExperience> handle={workExperienceDialog}>
+          {({ payload }) => {
+            if (!payload) return null;
+
+            return (
+              <SheetContent
+                container={mainRef.current}
+                withOverlay={false}
+                className="border-stone-800 bg-stone-900/80 backdrop-blur-sm"
+              >
+                <SheetHeader>
+                  <SheetTitle className="font-bold text-orange-500 text-xl sm:text-2xl">
+                    {payload.company}
+                  </SheetTitle>
+                  <SheetDescription className="mt-3 text-sm text-stone-300 sm:text-lg">
+                    {payload.title}
+                  </SheetDescription>
+                  <div className="mt-1 flex items-center gap-2 text-stone-400 text-xs">
+                    <span>{payload.location}</span>
+                    <span>•</span>
+                    <span>{payload.startDate}</span>
+                  </div>
+                </SheetHeader>
+                <ScrollArea.Root className="relative flex min-h-0 flex-1 overflow-hidden before:absolute before:top-0 before:h-px before:w-full before:bg-stone-800 before:content-['']">
+                  <ScrollArea.Viewport className="min-h-0 flex-1 overflow-y-auto overscroll-contain py-6 pr-6 pl-1 focus-visible:outline focus-visible:outline-blue-500 focus-visible:-outline-offset-1">
+                    <ScrollArea.Content className="flex flex-col gap-6">
+                      <div className="prose prose-invert prose-stone mx-auto max-w-md">
+                        <ul>
+                          {payload.responsibilities.map((responsibility) => {
+                            return (
+                              <li
+                                key={responsibility}
+                                className="relative pl-6 text-stone-300 leading-relaxed"
+                              >
+                                {responsibility}
+                              </li>
+                            );
+                          })}
+                        </ul>
+                      </div>
+                    </ScrollArea.Content>
+                  </ScrollArea.Viewport>
+                  <ScrollArea.Scrollbar className="pointer-events-none absolute m-1 flex w-[0.25rem] justify-center rounded-[1rem] opacity-0 transition-opacity duration-[250ms] data-[hovering]:pointer-events-auto data-[scrolling]:pointer-events-auto data-[hovering]:opacity-100 data-[scrolling]:opacity-100 data-[hovering]:duration-[75ms] data-[scrolling]:duration-[75ms] md:w-[0.325rem]">
+                    <ScrollArea.Thumb className="w-full rounded-[inherit] bg-[var(--color-gray-500)] before:absolute before:top-1/2 before:left-1/2 before:h-[calc(100%+1rem)] before:w-[calc(100%+1rem)] before:-translate-x-1/2 before:-translate-y-1/2 before:content-['']" />
+                  </ScrollArea.Scrollbar>
+                </ScrollArea.Root>
+              </SheetContent>
+            );
+          }}
+        </Sheet>
         <div className="absolute top-6 right-6 flex gap-1 text-xs">
           <fetcher.Form method="post">
             <input type="hidden" name="lang" value="en" />
@@ -190,22 +314,8 @@ export default function Home({ loaderData }: Route.ComponentProps) {
             ))}
           </ul>
         </nav>
-        {/* <div className="filter-[url(#ambilight)] aspect-video w-96 overflow-clip">
-          <video
-            className="h-full w-full rounded-sm object-cover"
-            src={bwMovie}
-            autoPlay
-            onLoadedMetadata={(e) => {
-              e.currentTarget.playbackRate = 2;
-            }}
-            loop
-            muted
-            playsInline
-            disablePictureInPicture
-            disableRemotePlayback
-          />
-        </div> */}
       </main>
+
       <svg width="0" height="0" aria-hidden="true">
         <filter
           id="ambilight"
@@ -246,7 +356,7 @@ export default function Home({ loaderData }: Route.ComponentProps) {
           <feComposite in="source" in2="ambilight-light" operator="over" />
         </filter>
       </svg>
-    </>
+    </div>
   );
 }
 
@@ -339,5 +449,29 @@ function Item({
         )}
       </AnimatePresence>
     </motion.li>
+  );
+}
+
+function Timeline() {
+  const id = useId();
+
+  return (
+    <div className="absolute inset-0 overflow-hidden">
+      <svg
+        className="absolute top-0 left-[max(0px,calc(40%-18.125rem))] h-full w-1.5"
+        aria-hidden="true"
+      >
+        <defs>
+          <pattern id={id} width="6" height="8" patternUnits="userSpaceOnUse">
+            <path
+              d="M0 0H6M0 8H6"
+              className="stroke-sky-900/10 xl:stroke-white/10 dark:stroke-white/10"
+              fill="none"
+            />
+          </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill={`url(#${id})`} />
+      </svg>
+    </div>
   );
 }

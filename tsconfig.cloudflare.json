@@ -11,6 +11,7 @@
   "compilerOptions": {
     "composite": true,
     "strict": true,
+    "noUncheckedIndexedAccess": true,
     "lib": ["DOM", "DOM.Iterable", "ES2021"],
     "types": [
       "vite/client",
