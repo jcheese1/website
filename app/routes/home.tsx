@@ -11,8 +11,8 @@ import {
   useVelocity,
 } from "motion/react";
 import { Cursor, usePointerPosition } from "motion-plus/react";
-import { useId, useRef, useState } from "react";
-import { redirect, useFetcher, useLoaderData } from "react-router";
+import { useId, useState } from "react";
+import { redirect, useFetcher } from "react-router";
 import agentCreatorMovie from "~/assets/agent-creator.webm";
 import aifrensMovie from "~/assets/aifrens.webm";
 import bwMovie from "~/assets/bw.webm";
@@ -139,7 +139,6 @@ export default function Home({ loaderData }: Route.ComponentProps) {
   const fetcher = useFetcher();
   const optimisticLang = fetcher.formData?.get("lang") as "en" | "ja" | null;
   const lang = optimisticLang || loaderData.lang;
-  const mainRef = useRef<HTMLDivElement>(null);
 
   return (
     <div className="grid">
@@ -184,17 +183,13 @@ export default function Home({ loaderData }: Route.ComponentProps) {
           );
         })}
       </div>
-      <main
-        ref={mainRef}
-        className="relative mx-auto flex min-h-screen max-w-lg flex-col justify-center px-16 py-12 [grid-area:1/1] sm:px-6"
-      >
+      <main className="relative mx-auto flex min-h-screen max-w-lg flex-col justify-center px-16 py-12 [grid-area:1/1] sm:px-6">
         <Sheet<LocalizedWorkExperience> handle={workExperienceDialog}>
           {({ payload }) => {
             if (!payload) return null;
 
             return (
               <SheetContent
-                container={mainRef.current}
                 withOverlay={false}
                 className="border-stone-800 bg-stone-900/80 backdrop-blur-sm"
               >
@@ -214,13 +209,13 @@ export default function Home({ loaderData }: Route.ComponentProps) {
                 <ScrollArea.Root className="relative flex min-h-0 flex-1 overflow-hidden before:absolute before:top-0 before:h-px before:w-full before:bg-stone-800 before:content-['']">
                   <ScrollArea.Viewport className="min-h-0 flex-1 overflow-y-auto overscroll-contain py-6 pr-6 pl-1 focus-visible:outline focus-visible:outline-blue-500 focus-visible:-outline-offset-1">
                     <ScrollArea.Content className="flex flex-col gap-6">
-                      <div className="prose prose-invert prose-stone mx-auto max-w-md">
+                      <div className="prose prose-invert prose-stone">
                         <ul>
                           {payload.responsibilities.map((responsibility) => {
                             return (
                               <li
                                 key={responsibility}
-                                className="relative pl-6 text-stone-300 leading-relaxed"
+                                className="relative pl-2 text-stone-300 leading-relaxed"
                               >
                                 {responsibility}
                               </li>
