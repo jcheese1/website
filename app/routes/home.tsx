@@ -16,9 +16,11 @@ import { redirect, useFetcher, useLoaderData } from "react-router";
 import agentCreatorMovie from "~/assets/agent-creator.webm";
 import aifrensMovie from "~/assets/aifrens.webm";
 import bwMovie from "~/assets/bw.webm";
+import me from "~/assets/me.png";
 import mpMovie from "~/assets/mp.webm";
 import smbMovie from "~/assets/smb.webm";
 import smolcoinMovie from "~/assets/smolcoin.webm";
+import { FlickeringGrid } from "~/components/flickering-grid";
 import {
   Sheet,
   SheetContent,
@@ -264,9 +266,18 @@ export default function Home({ loaderData }: Route.ComponentProps) {
             </button>
           </fetcher.Form>
         </div>
-        <h1 className="font-medium text-3xl text-orange-500 tracking-tight">
-          jcheese
-        </h1>
+        <div className="flex items-end justify-between">
+          <h1 className="font-medium text-3xl text-orange-500 tracking-tight">
+            jcheese
+          </h1>
+          <FlickeringGrid
+            imageSrc={me}
+            squareSize={2}
+            gridGap={2}
+            className="size-24"
+            flickerChance={0.1}
+          />
+        </div>
         <AnimatePresence initial={false} mode="wait">
           <motion.p
             key={lang}
