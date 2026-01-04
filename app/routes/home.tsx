@@ -266,15 +266,15 @@ export default function Home({ loaderData }: Route.ComponentProps) {
             </button>
           </fetcher.Form>
         </div>
-        <div className="flex items-end justify-between">
-          <h1 className="font-medium text-3xl text-orange-500 tracking-tight">
+        <div className="mt-16 flex items-end justify-between sm:mt-0">
+          <h1 className="font-medium text-2xl text-orange-500 tracking-tight sm:text-3xl">
             jcheese
           </h1>
           <FlickeringGrid
             imageSrc={me}
             squareSize={2}
             gridGap={2}
-            className="size-24"
+            className="size-16 sm:size-24"
             flickerChance={0.1}
           />
         </div>
@@ -285,7 +285,7 @@ export default function Home({ loaderData }: Route.ComponentProps) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.3 }}
-            className="mt-3 text-stone-300 leading-relaxed"
+            className="mt-3 text-sm text-stone-300 leading-relaxed sm:text-base"
           >
             {description[lang]}
           </motion.p>
@@ -295,7 +295,7 @@ export default function Home({ loaderData }: Route.ComponentProps) {
           {skills.map((skill) => (
             <span
               key={skill}
-              className="rounded bg-orange-500/10 px-2 py-1 text-orange-400 text-xs"
+              className="rounded bg-orange-500/10 px-2 py-1 text-orange-400 text-xs sm:text-sm"
             >
               {skill}
             </span>
@@ -313,7 +313,7 @@ export default function Home({ loaderData }: Route.ComponentProps) {
                   href={project.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="group flex items-center gap-2 text-stone-400 transition-colors hover:text-orange-400"
+                  className="group flex items-center gap-2 text-sm text-stone-400 transition-colors hover:text-orange-400 sm:text-base"
                 >
                   <span className="underItemne-offset-2 group-hover:underline">
                     {project.name}
