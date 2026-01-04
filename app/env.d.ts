@@ -1,7 +1,7 @@
 // This file infers types for the cloudflare:workers environment from your Alchemy Worker.
 // @see https://alchemy.run/concepts/bindings/#type-safe-bindings
 
-import type{ PublicEnv, Env } from "./env.server";
+import type { PublicEnv, Env } from "./env.server";
 
 declare global {
   var ENV: PublicEnv;

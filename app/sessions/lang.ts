@@ -1,6 +1,5 @@
 import { createCookieSessionStorage } from "react-router";
 
-
 type SessionData = {
   lang: "en" | "ja";
 };

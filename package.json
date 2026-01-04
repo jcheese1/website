@@ -35,8 +35,11 @@
     "@types/react-dom": "^19.1.2",
     "alchemy": "^0.82.1",
     "miniflare": "^4.20250617.3",
+    "oxfmt": "^0.21.0",
+    "oxlint": "^1.36.0",
     "tailwindcss": "^4.1.4",
     "typescript": "^5.8.3",
+    "ultracite": "7.0.6",
     "vite": "^7.3.0",
     "vite-tsconfig-paths": "^5.1.4",
     "wrangler": "^4.20.5"

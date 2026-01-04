@@ -11,15 +11,15 @@ declare module "react-router" {
 }
 
 const requestHandler = createRequestHandler(
-  // @ts-ignore
+  // @ts-expect-error
   () => import("virtual:react-router/server-build"),
-  import.meta.env.MODE
+  import.meta.env.MODE,
 );
 
 export default {
-  async fetch(request: Request, env: CloudflareEnv, ctx: ExecutionContext) {  
+  async fetch(request: Request, env: CloudflareEnv, ctx: ExecutionContext) {
     return requestHandler(request, {
       cloudflare: { env, ctx },
     });
   },
-}
+};

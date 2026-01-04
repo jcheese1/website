@@ -32,6 +32,7 @@ import {
 import type { LocalizedWorkExperience } from "~/resume";
 import { getLocalizedWorkExperiences, workExperiences } from "~/resume";
 import { commitSession, getSession } from "~/sessions/lang";
+
 import type { Route } from "./+types/home";
 
 const allVideos = [
