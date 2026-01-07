@@ -1,5 +1,6 @@
 import { ScrollArea } from "@base-ui/react";
 import { Dialog as BaseDialog } from "@base-ui/react/dialog";
+import { Cursor, usePointerPosition } from "motion-plus/react";
 import {
   AnimatePresence,
   clamp,
@@ -10,9 +11,11 @@ import {
   useTransform,
   useVelocity,
 } from "motion/react";
-import { Cursor, usePointerPosition } from "motion-plus/react";
 import { useId, useState } from "react";
 import { redirect, useFetcher } from "react-router";
+
+import type { LocalizedWorkExperience } from "~/resume";
+
 import agentCreatorMovie from "~/assets/agent-creator.webm";
 import aifrensMovie from "~/assets/aifrens.webm";
 import bwMovie from "~/assets/bw.webm";
@@ -20,6 +23,7 @@ import me from "~/assets/me.png";
 import mpMovie from "~/assets/mp.webm";
 import smbMovie from "~/assets/smb.webm";
 import smolcoinMovie from "~/assets/smolcoin.webm";
+import { Character3D } from "~/components/character-3d";
 import { FlickeringGrid } from "~/components/flickering-grid";
 import {
   Sheet,
@@ -29,7 +33,6 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "~/components/ui/sheet";
-import type { LocalizedWorkExperience } from "~/resume";
 import { getLocalizedWorkExperiences, workExperiences } from "~/resume";
 import { commitSession, getSession } from "~/sessions/lang";
 
@@ -64,7 +67,7 @@ export async function loader({ request }: Route.LoaderArgs) {
 
   const localizedWorkExperiences = getLocalizedWorkExperiences(
     filteredWorkExperiences,
-    lang,
+    lang
   );
 
   return {
@@ -143,6 +146,7 @@ export default function Home({ loaderData }: Route.ComponentProps) {
 
   return (
     <div className="grid">
+      <Character3D />
       <div className="relative [grid-area:1/1]">
         <Timeline />
         {filteredWorkExperiences.map((experience, index) => {
