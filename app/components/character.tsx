@@ -36,41 +36,63 @@ interface ModelProps {
   animationDelay?: number;
 }
 
-export function Model({
-  xPosition = 0,
-  zOffset = 0,
-  animationDelay = 0,
-  ...props
-}: ModelProps) {
+export function Model({ xPosition = 0, zOffset = 0, ...props }: ModelProps) {
   const group = React.useRef<THREE.Group>(null);
-  const { scene, animations } = useGLTF("/models/me-ransformed.glb");
+  const { scene, animations } = useGLTF("/models/me-transformed.glb");
   const clone = React.useMemo(() => SkeletonUtils.clone(scene), [scene]);
   const { nodes, materials } = useGraph(clone) as unknown as GLTFResult;
   const { actions, names } = useAnimations(animations, group);
+  const [dance, setDance] = React.useState(false);
 
   const walkSpeed = 2;
   const startZ = -20 - zOffset;
-  // const resetZ = -25;
   const maxZ = 5;
+
+  useEffect(() => {
+    const danceInterval = setInterval(() => {
+      if (!dance && Math.random() < 0.1) {
+        setDance(true);
+      }
+    }, 3000);
+
+    return () => clearInterval(danceInterval);
+  }, [dance]);
+
+  useEffect(() => {
+    if (!dance) return;
+
+    const stopDanceTimeout = setTimeout(
+      () => {
+        if (Math.random() < 0.3) {
+          setDance(false);
+        }
+      },
+      2000 + Math.random() * 1000
+    );
+
+    return () => clearTimeout(stopDanceTimeout);
+  }, [dance]);
 
   useEffect(() => {
     const walkAction =
       actions["Armature.001|mixamo.com|Layer0.003"] ??
       actions[names?.[0] ?? ""];
 
-    if (walkAction) {
-      walkAction.reset();
-      walkAction.time = animationDelay;
-      walkAction.fadeIn(0.5).play();
-    }
+    const danceAction =
+      actions["Armature.001|mixamo.com|Layer0.004"] ??
+      actions[names?.[0] ?? ""];
+
+    if (!walkAction || !danceAction) return;
+
+    (dance ? danceAction : walkAction).reset().fadeIn(0.5).play();
 
     return () => {
-      walkAction?.fadeOut(0.5);
+      (dance ? danceAction : walkAction).fadeOut(0.5);
     };
-  }, [actions, names, animationDelay]);
+  }, [actions, names, dance]);
 
   useFrame((_, delta) => {
-    if (group.current) {
+    if (group.current && !dance) {
       group.current.position.z += walkSpeed * delta;
 
       if (group.current.position.z > maxZ) {
@@ -112,13 +134,11 @@ export function ModelCrowd({ count = 100 }: { count?: number }) {
     for (let i = 0; i < count; i++) {
       const xPosition = (i / (count - 1)) * spreadX - spreadX / 2;
       const zOffset = Math.random() * maxZOffset;
-      const animationDelay = Math.random() * 2;
 
       items.push({
         key: i,
         xPosition,
         zOffset,
-        animationDelay,
       });
     }
     return items;
@@ -131,11 +151,10 @@ export function ModelCrowd({ count = 100 }: { count?: number }) {
           key={instance.key}
           xPosition={instance.xPosition}
           zOffset={instance.zOffset}
-          animationDelay={instance.animationDelay}
         />
       ))}
     </group>
   );
 }
 
-useGLTF.preload("/models/me-ransformed.glb");
+useGLTF.preload("/models/me-transformed.glb");
