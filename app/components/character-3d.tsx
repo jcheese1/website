@@ -1,5 +1,12 @@
+import {
+  Environment,
+  Grid,
+  MeshReflectorMaterial,
+  OrbitControls,
+} from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { Suspense } from "react";
+import * as THREE from "three";
 
 import { ModelCrowd } from "./character";
 
@@ -7,19 +14,46 @@ export function Character3D() {
   return (
     <div className="pointer-events-none fixed inset-0 z-[-1] flex items-center justify-center">
       <Canvas
-        camera={{ position: [0, 0, 3], fov: 50 }}
+        camera={{ position: [10, 12, 12], fov: 25 }}
         style={{ background: "transparent" }}
         gl={{ alpha: true, antialias: true }}
       >
-        {/* Fog that fades the character as it comes from the distance */}
-        <fog attach="fog" args={["#0c0a09", 5, 25]} />
+        <fog attach="fog" args={["#0c0a09", 15, 25]} />
 
         <ambientLight intensity={0.6} />
-        <directionalLight position={[5, 10, 5]} intensity={1} />
-        <directionalLight position={[-5, 5, -5]} intensity={0.3} />
         <Suspense fallback={null}>
-          <ModelCrowd count={100} />
+          <ModelCrowd count={30} />
         </Suspense>
+        <OrbitControls />
+        <mesh rotation={[-Math.PI / 2, 0, 0]}>
+          <planeGeometry args={[50, 50]} />
+          <MeshReflectorMaterial
+            resolution={2048}
+            mixBlur={1}
+            mixStrength={80}
+            roughness={1}
+            depthScale={1.2}
+            minDepthThreshold={0.4}
+            maxDepthThreshold={1.4}
+            color="#050505"
+            metalness={0.5}
+          />
+        </mesh>
+        <Environment preset="city" />
+
+        {/* <Grid
+          position={[0, -0.01, 0]}
+          args={[10.5, 10.5]}
+          cellSize={0.6}
+          cellThickness={1}
+          cellColor={"#6f6f6f"}
+          sectionSize={3.3}
+          sectionThickness={1.5}
+          sectionColor={"#c75f00"}
+          fadeDistance={20}
+          fadeStrength={1}
+          infiniteGrid
+        /> */}
       </Canvas>
     </div>
   );

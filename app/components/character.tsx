@@ -34,9 +34,15 @@ interface ModelProps {
   xPosition?: number;
   zOffset?: number;
   animationDelay?: number;
+  scale?: number;
 }
 
-export function Model({ xPosition = 0, zOffset = 0, ...props }: ModelProps) {
+export function Model({
+  xPosition = 0,
+  zOffset = 0,
+  scale = 1,
+  ...props
+}: ModelProps) {
   const group = React.useRef<THREE.Group>(null);
   const { scene, animations } = useGLTF("/models/me-transformed.glb");
   const clone = React.useMemo(() => SkeletonUtils.clone(scene), [scene]);
@@ -45,8 +51,10 @@ export function Model({ xPosition = 0, zOffset = 0, ...props }: ModelProps) {
   const [dance, setDance] = React.useState(false);
 
   const walkSpeed = 2;
-  const startZ = -20 - zOffset;
-  const maxZ = 5;
+  const startZ = -15 - zOffset;
+  const resetZ = -25;
+
+  const maxZ = 9;
 
   useEffect(() => {
     const danceInterval = setInterval(() => {
@@ -74,13 +82,9 @@ export function Model({ xPosition = 0, zOffset = 0, ...props }: ModelProps) {
   }, [dance]);
 
   useEffect(() => {
-    const walkAction =
-      actions["Armature.001|mixamo.com|Layer0.003"] ??
-      actions[names?.[0] ?? ""];
+    const walkAction = actions["Walk"] ?? actions[names?.[0] ?? ""];
 
-    const danceAction =
-      actions["Armature.001|mixamo.com|Layer0.004"] ??
-      actions[names?.[0] ?? ""];
+    const danceAction = actions["Break_Dance"] ?? actions[names?.[0] ?? ""];
 
     if (!walkAction || !danceAction) return;
 
@@ -96,7 +100,7 @@ export function Model({ xPosition = 0, zOffset = 0, ...props }: ModelProps) {
       group.current.position.z += walkSpeed * delta;
 
       if (group.current.position.z > maxZ) {
-        group.current.position.z = startZ;
+        group.current.position.z = resetZ;
       }
     }
   });
@@ -104,9 +108,10 @@ export function Model({ xPosition = 0, zOffset = 0, ...props }: ModelProps) {
   return (
     <group
       ref={group}
-      {...props}
       position={[xPosition, -1, startZ]}
       dispose={null}
+      scale={scale}
+      {...props}
     >
       <group name="Scene">
         <group name="Armature" rotation={[Math.PI / 2, 0, 0]} scale={0.01}>
@@ -125,32 +130,35 @@ export function Model({ xPosition = 0, zOffset = 0, ...props }: ModelProps) {
   );
 }
 
-export function ModelCrowd({ count = 100 }: { count?: number }) {
+export function ModelCrowd({ count }: { count: number }) {
   const instances = React.useMemo(() => {
     const items = [];
-    const spreadX = 80;
-    const maxZOffset = 15;
+    const spreadX = 20;
+    const maxZOffset = 5;
 
     for (let i = 0; i < count; i++) {
       const xPosition = (i / (count - 1)) * spreadX - spreadX / 2;
       const zOffset = Math.random() * maxZOffset;
+      const scale = Math.random() * 0.5 + 0.7;
 
       items.push({
         key: i,
         xPosition,
         zOffset,
+        scale,
       });
     }
     return items;
   }, [count]);
 
   return (
-    <group>
+    <group position={[0, 1.2, 0]}>
       {instances.map((instance) => (
         <Model
           key={instance.key}
           xPosition={instance.xPosition}
           zOffset={instance.zOffset}
+          scale={instance.scale}
         />
       ))}
     </group>
