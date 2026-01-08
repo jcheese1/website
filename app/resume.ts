@@ -4,7 +4,7 @@ export const workExperiences = [
     title: ["Front-End Engineer", "フロントエンドエンジニア"],
     company: "Question Labs",
     location: "Remote",
-    defaultHidden: false,
+    defaultHidden: true,
     responsibilities: [
       [
         "Spearheaded development of the web version of a mobile application from scratch, translating mobile-first design principles to responsive web experiences.",
@@ -162,7 +162,7 @@ export type LocalizedWorkExperience = {
 
 export function getLocalizedWorkExperiences(
   experiences: readonly WorkExperience[],
-  lang: "en" | "ja",
+  lang: "en" | "ja"
 ): LocalizedWorkExperience[] {
   const langIndex = lang === "en" ? 0 : 1;
   return experiences.map((experience) => ({
@@ -172,7 +172,7 @@ export function getLocalizedWorkExperiences(
     location: experience.location,
     defaultHidden: experience.defaultHidden,
     responsibilities: experience.responsibilities.map(
-      (responsibility) => responsibility[langIndex],
+      (responsibility) => responsibility[langIndex]
     ),
   }));
 }
