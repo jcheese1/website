@@ -30,36 +30,62 @@ type GLTFResult = GLTF & {
   animations: GLTFAction[];
 };
 
-export function Model(props: React.JSX.IntrinsicElements["group"]) {
+interface ModelProps {
+  xPosition?: number;
+  zOffset?: number;
+  animationDelay?: number;
+}
+
+export function Model({
+  xPosition = 0,
+  zOffset = 0,
+  animationDelay = 0,
+  ...props
+}: ModelProps) {
   const group = React.useRef<THREE.Group>(null);
   const { scene, animations } = useGLTF("/models/me-ransformed.glb");
   const clone = React.useMemo(() => SkeletonUtils.clone(scene), [scene]);
   const { nodes, materials } = useGraph(clone) as unknown as GLTFResult;
   const { actions, names } = useAnimations(animations, group);
 
-  const walkSpeed = 2; // Adjust to match animation pace
+  const walkSpeed = 2;
+  const startZ = -20 - zOffset;
+  // const resetZ = -25;
+  const maxZ = 5;
 
   useEffect(() => {
     const walkAction =
       actions["Armature.001|mixamo.com|Layer0.003"] ??
       actions[names?.[0] ?? ""];
 
-    walkAction?.reset().fadeIn(0.5).play();
+    if (walkAction) {
+      walkAction.reset();
+      walkAction.time = animationDelay;
+      walkAction.fadeIn(0.5).play();
+    }
 
     return () => {
       walkAction?.fadeOut(0.5);
     };
-  }, [actions, names]);
+  }, [actions, names, animationDelay]);
 
-  // Smooth constant movement
   useFrame((_, delta) => {
     if (group.current) {
       group.current.position.z += walkSpeed * delta;
+
+      if (group.current.position.z > maxZ) {
+        group.current.position.z = startZ;
+      }
     }
   });
 
   return (
-    <group ref={group} {...props} position={[0, -1, -20]} dispose={null}>
+    <group
+      ref={group}
+      {...props}
+      position={[xPosition, -1, startZ]}
+      dispose={null}
+    >
       <group name="Scene">
         <group name="Armature" rotation={[Math.PI / 2, 0, 0]} scale={0.01}>
           <primitive object={nodes.mixamorigHips} />
@@ -73,6 +99,41 @@ export function Model(props: React.JSX.IntrinsicElements["group"]) {
           scale={0.01}
         />
       </group>
+    </group>
+  );
+}
+
+export function ModelCrowd({ count = 100 }: { count?: number }) {
+  const instances = React.useMemo(() => {
+    const items = [];
+    const spreadX = 80;
+    const maxZOffset = 15;
+
+    for (let i = 0; i < count; i++) {
+      const xPosition = (i / (count - 1)) * spreadX - spreadX / 2;
+      const zOffset = Math.random() * maxZOffset;
+      const animationDelay = Math.random() * 2;
+
+      items.push({
+        key: i,
+        xPosition,
+        zOffset,
+        animationDelay,
+      });
+    }
+    return items;
+  }, [count]);
+
+  return (
+    <group>
+      {instances.map((instance) => (
+        <Model
+          key={instance.key}
+          xPosition={instance.xPosition}
+          zOffset={instance.zOffset}
+          animationDelay={instance.animationDelay}
+        />
+      ))}
     </group>
   );
 }

@@ -1,7 +1,7 @@
 import { Canvas } from "@react-three/fiber";
 import { Suspense } from "react";
 
-import { Model } from "./character";
+import { ModelCrowd } from "./character";
 
 export function Character3D() {
   return (
@@ -18,7 +18,7 @@ export function Character3D() {
         <directionalLight position={[5, 10, 5]} intensity={1} />
         <directionalLight position={[-5, 5, -5]} intensity={0.3} />
         <Suspense fallback={null}>
-          <Model />
+          <ModelCrowd count={100} />
         </Suspense>
       </Canvas>
     </div>
