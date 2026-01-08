@@ -23,8 +23,8 @@ import me from "~/assets/me.png";
 import mpMovie from "~/assets/mp.webm";
 import smbMovie from "~/assets/smb.webm";
 import smolcoinMovie from "~/assets/smolcoin.webm";
-import { Character3D } from "~/components/character-3d";
 import { FlickeringGrid } from "~/components/flickering-grid";
+import { Scene } from "~/components/scene";
 import {
   Sheet,
   SheetContent,
@@ -146,8 +146,8 @@ export default function Home({ loaderData }: Route.ComponentProps) {
 
   return (
     <div className="grid">
-      <Character3D />
-      <div className="relative [grid-area:1/1]">
+      <Scene />
+      <div className="pointer-events-none relative [grid-area:1/1]">
         <Timeline />
         {filteredWorkExperiences.map((experience, index) => {
           const previousDate =
@@ -166,7 +166,7 @@ export default function Home({ loaderData }: Route.ComponentProps) {
               className="pt-24 pb-[calc((var(--previous-date)-var(--current-date))*58px)]"
             >
               <header className="relative">
-                <div className="absolute top-0 left-[max(-0.5rem,calc(40%-18.125rem))] z-50 flex h-4 items-center justify-end gap-x-2">
+                <div className="pointer-events-auto absolute top-0 left-[max(-0.5rem,calc(40%-18.125rem))] z-50 flex h-4 items-center justify-end gap-x-2">
                   <div className="h-0.25 w-3.5 bg-stone-400 lg:-mr-3.5 xl:mr-0 xl:bg-stone-300" />
                   <div className="inline-flex">
                     <time className="font-medium text-white/40 text-xs">
@@ -188,7 +188,7 @@ export default function Home({ loaderData }: Route.ComponentProps) {
           );
         })}
       </div>
-      <main className="relative mx-auto flex min-h-screen max-w-lg flex-col justify-center px-16 py-12 [grid-area:1/1] sm:px-6">
+      <main className="pointer-events-none relative mx-auto flex min-h-screen max-w-lg flex-col justify-center px-16 py-12 [grid-area:1/1] sm:px-6">
         <Sheet<LocalizedWorkExperience> handle={workExperienceDialog}>
           {({ payload }) => {
             if (!payload) return null;
@@ -238,7 +238,7 @@ export default function Home({ loaderData }: Route.ComponentProps) {
             );
           }}
         </Sheet>
-        <div className="absolute top-6 right-6 flex gap-1 text-xs">
+        <div className="pointer-events-auto absolute top-6 right-6 flex gap-1 text-xs">
           <fetcher.Form method="post">
             <input type="hidden" name="lang" value="en" />
             <button
@@ -267,7 +267,7 @@ export default function Home({ loaderData }: Route.ComponentProps) {
           </fetcher.Form>
         </div>
         <div className="mt-16 flex items-end justify-between sm:mt-0">
-          <h1 className="font-medium text-2xl text-orange-500 tracking-tight sm:text-3xl">
+          <h1 className="font-medium text-2xl text-orange-500 tracking-tight sm:text-3xl pointer-events-auto">
             jcheese
           </h1>
           <FlickeringGrid
@@ -285,7 +285,7 @@ export default function Home({ loaderData }: Route.ComponentProps) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.3 }}
-            className="mt-3 text-sm text-stone-300 leading-relaxed sm:text-base"
+            className="mt-3 text-sm text-stone-300 leading-relaxed sm:text-base pointer-events-auto"
           >
             {description[lang]}
           </motion.p>
@@ -295,14 +295,14 @@ export default function Home({ loaderData }: Route.ComponentProps) {
           {skills.map((skill) => (
             <span
               key={skill}
-              className="rounded bg-orange-500/10 px-2 py-1 text-orange-400 text-xs sm:text-sm"
+              className="rounded bg-orange-500/10 px-2 py-1 text-orange-400 text-xs sm:text-sm pointer-events-auto"
             >
               {skill}
             </span>
           ))}
         </div>
 
-        <nav className="mt-10">
+        <nav className="pointer-events-auto mt-10">
           <h2 className="mb-4 text-stone-500 text-xs uppercase tracking-widest">
             {archiveText[lang]}
           </h2>
@@ -410,6 +410,7 @@ function Item({
     <motion.li
       onHoverStart={() => setIsHovered(true)}
       onHoverEnd={() => setIsHovered(false)}
+      className="w-max"
     >
       {children}
       <AnimatePresence>

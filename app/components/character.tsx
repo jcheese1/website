@@ -1,4 +1,3 @@
-// biome-ignore assist/source/organizeImports: organized by hand
 import type * as THREE from "three";
 import type { GLTF } from "three-stdlib";
 
@@ -48,54 +47,55 @@ export function Model({
   const clone = React.useMemo(() => SkeletonUtils.clone(scene), [scene]);
   const { nodes, materials } = useGraph(clone) as unknown as GLTFResult;
   const { actions, names } = useAnimations(animations, group);
-  const [dance, setDance] = React.useState(false);
+  const [animation, setCurrentAnimation] = React.useState<
+    "Walk" | "Break_Dance" | "Wave"
+  >("Walk");
 
   const walkSpeed = 0.8;
   const startZ = -10 - zOffset;
 
   const maxZ = 8.5;
 
+  const isWalking = animation === "Walk";
+
   useEffect(() => {
     const danceInterval = setInterval(() => {
-      if (!dance && Math.random() < 0.1) {
-        setDance(true);
+      if (isWalking && Math.random() < 0.1) {
+        setCurrentAnimation("Break_Dance");
       }
     }, 3000);
 
     return () => clearInterval(danceInterval);
-  }, [dance]);
+  }, [isWalking]);
 
   useEffect(() => {
-    if (!dance) return;
+    if (isWalking) return;
 
-    const stopDanceTimeout = setTimeout(
+    const stopAnimationTimeout = setTimeout(
       () => {
-        if (Math.random() < 0.3) {
-          setDance(false);
-        }
+        if (Math.random() > 0.7) return;
+        setCurrentAnimation("Walk");
       },
       2000 + Math.random() * 1000
     );
 
-    return () => clearTimeout(stopDanceTimeout);
-  }, [dance]);
+    return () => clearTimeout(stopAnimationTimeout);
+  }, [isWalking, animation]);
 
   useEffect(() => {
-    const walkAction = actions["Walk"] ?? actions[names?.[0] ?? ""];
+    const currentAnimation = actions[animation] ?? actions[names?.[0] ?? ""];
 
-    const danceAction = actions["Break_Dance"] ?? actions[names?.[0] ?? ""];
+    if (!currentAnimation) return;
 
-    if (!walkAction || !danceAction) return;
-
-    (dance ? danceAction : walkAction).reset().fadeIn(0.5).play();
+    currentAnimation.reset().fadeIn(0.5).play();
 
     return () => {
-      (dance ? danceAction : walkAction).fadeOut(0.5);
+      currentAnimation.fadeOut(0.5);
     };
-  }, [actions, names, dance]);
+  }, [actions, names, animation]);
 
   useFrame((_, delta) => {
-    if (group.current && !dance) {
+    if (group.current && isWalking) {
       group.current.position.z += walkSpeed * delta;
 
       if (group.current.position.z > maxZ) {
@@ -112,11 +112,23 @@ export function Model({
       scale={scale}
       {...props}
     >
+      {/* hitbox */}
+      <mesh
+        position={[0, 0.5, 0]}
+        visible={false}
+        onClick={(e) => {
+          e.stopPropagation();
+          setCurrentAnimation(animation === "Wave" ? "Walk" : "Wave");
+        }}
+      >
+        <boxGeometry args={[0.5, 0.7, 0.5]} />
+      </mesh>
       <group name="Scene">
         <group name="Armature" rotation={[Math.PI / 2, 0, 0]} scale={0.01}>
           <primitive object={nodes.mixamorigHips} />
         </group>
         <skinnedMesh
+          raycast={() => null}
           name="material001"
           geometry={nodes.material001.geometry}
           material={materials["Material.001"]}
