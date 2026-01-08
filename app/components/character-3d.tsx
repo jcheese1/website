@@ -1,12 +1,6 @@
-import {
-  Environment,
-  Grid,
-  MeshReflectorMaterial,
-  OrbitControls,
-} from "@react-three/drei";
+import { Environment, MeshReflectorMaterial } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { Suspense } from "react";
-import * as THREE from "three";
 
 import { ModelCrowd } from "./character";
 
@@ -24,11 +18,10 @@ export function Character3D() {
         <Suspense fallback={null}>
           <ModelCrowd count={30} />
         </Suspense>
-        <OrbitControls />
         <mesh rotation={[-Math.PI / 2, 0, 0]}>
           <planeGeometry args={[50, 50]} />
           <MeshReflectorMaterial
-            resolution={2048}
+            resolution={256}
             mixBlur={1}
             mixStrength={80}
             roughness={1}
