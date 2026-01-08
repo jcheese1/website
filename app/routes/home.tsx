@@ -34,6 +34,7 @@ import {
   SheetTrigger,
 } from "~/components/ui/sheet";
 import { getLocalizedWorkExperiences, workExperiences } from "~/resume";
+import { getSocialMetas } from "~/seo";
 import { commitSession, getSession } from "~/sessions/lang";
 
 import type { Route } from "./+types/home";
@@ -46,6 +47,16 @@ const allVideos = [
   agentCreatorMovie,
   aifrensMovie,
 ];
+
+export const meta: Route.MetaFunction = () =>
+  getSocialMetas({
+    url: "https://jcheese.xyz",
+    title: "jcheese",
+    description: "this is jcheese's website",
+    keywords:
+      "jcheese, website, portfolio, blog, projects, work, experience, skills, about, contact",
+    image: "https://jcheese.xyz/index.png",
+  });
 
 export const links: Route.LinksFunction = () =>
   allVideos.map((video) => ({
@@ -302,8 +313,8 @@ export default function Home({ loaderData }: Route.ComponentProps) {
           ))}
         </div>
 
-        <nav className="pointer-events-auto mt-10">
-          <h2 className="mb-4 text-stone-500 text-xs uppercase tracking-widest">
+        <nav className="mt-10">
+          <h2 className="mb-4 text-stone-500 text-xs uppercase tracking-widest pointer-events-auto">
             {archiveText[lang]}
           </h2>
           <ul className="space-y-2">

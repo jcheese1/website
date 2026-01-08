@@ -1,18 +1,12 @@
 import type * as THREE from "three";
 import type { GLTF } from "three-stdlib";
 
-import { useAnimations, useGLTF } from "@react-three/drei";
+import { useAnimations, useCursor, useGLTF } from "@react-three/drei";
 import { useFrame, useGraph } from "@react-three/fiber";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { SkeletonUtils } from "three-stdlib";
 
-type ActionName =
-  | "Armature.001|mixamo.com|Layer0"
-  | "Armature.001|mixamo.com|Layer0.001"
-  | "Armature.001|mixamo.com|Layer0.002"
-  | "Armature|mixamo.com|Layer0"
-  | "Armature|mixamo.com|Layer0.001"
-  | "Armature|mixamo.com|Layer0.002";
+type ActionName = "Walk" | "Break_Dance" | "Wave";
 
 interface GLTFAction extends THREE.AnimationClip {
   name: ActionName;
@@ -57,6 +51,10 @@ export function Model({
   const maxZ = 8.5;
 
   const isWalking = animation === "Walk";
+
+  const [hovered, setHovered] = useState(false);
+
+  useCursor(hovered);
 
   useEffect(() => {
     const danceInterval = setInterval(() => {
@@ -116,6 +114,8 @@ export function Model({
       <mesh
         position={[0, 0.5, 0]}
         visible={false}
+        onPointerEnter={() => setHovered(true)}
+        onPointerLeave={() => setHovered(false)}
         onClick={(e) => {
           e.stopPropagation();
           setCurrentAnimation(animation === "Wave" ? "Walk" : "Wave");

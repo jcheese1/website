@@ -8,6 +8,7 @@ import {
 } from "react-router";
 
 import type { Route } from "./+types/root";
+
 import "./app.css";
 
 export const links: Route.LinksFunction = () => [
@@ -31,12 +32,6 @@ export const links: Route.LinksFunction = () => [
   { rel: "shortcut icon", href: "/favicon.ico" },
   { rel: "apple-touch-icon", sizes: "180x180", href: "/apple-touch-icon.png" },
   { rel: "manifest", href: "/site.webmanifest" },
-];
-
-export const meta: Route.MetaFunction = () => [
-  { title: "jcheese" },
-  { name: "description", content: "this is jcheese's website" },
-  { name: "apple-mobile-web-app-title", content: "jcheese" },
 ];
 
 export function Layout({ children }: { children: React.ReactNode }) {
