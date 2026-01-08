@@ -50,11 +50,10 @@ export function Model({
   const { actions, names } = useAnimations(animations, group);
   const [dance, setDance] = React.useState(false);
 
-  const walkSpeed = 2;
-  const startZ = -15 - zOffset;
-  const resetZ = -25;
+  const walkSpeed = 0.8;
+  const startZ = -10 - zOffset;
 
-  const maxZ = 9;
+  const maxZ = 8.5;
 
   useEffect(() => {
     const danceInterval = setInterval(() => {
@@ -100,7 +99,7 @@ export function Model({
       group.current.position.z += walkSpeed * delta;
 
       if (group.current.position.z > maxZ) {
-        group.current.position.z = resetZ;
+        group.current.position.z = startZ;
       }
     }
   });
@@ -133,8 +132,8 @@ export function Model({
 export function ModelCrowd({ count }: { count: number }) {
   const instances = React.useMemo(() => {
     const items = [];
-    const spreadX = 20;
-    const maxZOffset = 5;
+    const spreadX = 18;
+    const maxZOffset = 10;
 
     for (let i = 0; i < count; i++) {
       const xPosition = (i / (count - 1)) * spreadX - spreadX / 2;
