@@ -6,6 +6,8 @@ import { useFrame, useGraph } from "@react-three/fiber";
 import React, { useEffect, useState } from "react";
 import { SkeletonUtils } from "three-stdlib";
 
+import { hitboxGeometry } from "~/hitbox";
+
 type ActionName = "Walk" | "Break_Dance" | "Wave";
 
 interface GLTFAction extends THREE.AnimationClip {
@@ -30,6 +32,9 @@ interface ModelProps {
   scale?: number;
 }
 
+const WALK_SPEED = 0.8;
+const MAX_Z = 8.5;
+
 export function Model({
   xPosition = 0,
   zOffset = 0,
@@ -45,10 +50,7 @@ export function Model({
     "Walk" | "Break_Dance" | "Wave"
   >("Walk");
 
-  const walkSpeed = 0.8;
   const startZ = -10 - zOffset;
-
-  const maxZ = 8.5;
 
   const isWalking = animation === "Walk";
 
@@ -57,28 +59,25 @@ export function Model({
   useCursor(hovered);
 
   useEffect(() => {
+    if (!isWalking) {
+      const stopAnimationTimeout = setTimeout(
+        () => {
+          if (Math.random() > 0.7) return;
+          setCurrentAnimation("Walk");
+        },
+        2000 + Math.random() * 1000
+      );
+      return () => clearTimeout(stopAnimationTimeout);
+    }
+
     const danceInterval = setInterval(() => {
-      if (isWalking && Math.random() < 0.1) {
+      if (Math.random() < 0.1) {
         setCurrentAnimation("Break_Dance");
       }
     }, 3000);
 
     return () => clearInterval(danceInterval);
   }, [isWalking]);
-
-  useEffect(() => {
-    if (isWalking) return;
-
-    const stopAnimationTimeout = setTimeout(
-      () => {
-        if (Math.random() > 0.7) return;
-        setCurrentAnimation("Walk");
-      },
-      2000 + Math.random() * 1000
-    );
-
-    return () => clearTimeout(stopAnimationTimeout);
-  }, [isWalking, animation]);
 
   useEffect(() => {
     const currentAnimation = actions[animation] ?? actions[names?.[0] ?? ""];
@@ -93,12 +92,11 @@ export function Model({
   }, [actions, names, animation]);
 
   useFrame((_, delta) => {
-    if (group.current && isWalking) {
-      group.current.position.z += walkSpeed * delta;
+    if (!group.current || !isWalking) return;
+    group.current.position.z += WALK_SPEED * delta;
 
-      if (group.current.position.z > maxZ) {
-        group.current.position.z = startZ;
-      }
+    if (group.current.position.z > MAX_Z) {
+      group.current.position.z = startZ;
     }
   });
 
@@ -121,7 +119,7 @@ export function Model({
           setCurrentAnimation(animation === "Wave" ? "Walk" : "Wave");
         }}
       >
-        <boxGeometry args={[0.5, 0.7, 0.5]} />
+        <primitive object={hitboxGeometry} />
       </mesh>
       <group name="Scene">
         <group name="Armature" rotation={[Math.PI / 2, 0, 0]} scale={0.01}>
@@ -137,41 +135,6 @@ export function Model({
           scale={0.01}
         />
       </group>
-    </group>
-  );
-}
-
-export function ModelCrowd({ count }: { count: number }) {
-  const instances = React.useMemo(() => {
-    const items = [];
-    const spreadX = 18;
-    const maxZOffset = 10;
-
-    for (let i = 0; i < count; i++) {
-      const xPosition = (i / (count - 1)) * spreadX - spreadX / 2;
-      const zOffset = Math.random() * maxZOffset;
-      const scale = Math.random() * 0.5 + 0.7;
-
-      items.push({
-        key: i,
-        xPosition,
-        zOffset,
-        scale,
-      });
-    }
-    return items;
-  }, [count]);
-
-  return (
-    <group position={[0, 1.1, 0]}>
-      {instances.map((instance) => (
-        <Model
-          key={instance.key}
-          xPosition={instance.xPosition}
-          zOffset={instance.zOffset}
-          scale={instance.scale}
-        />
-      ))}
     </group>
   );
 }

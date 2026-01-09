@@ -2,8 +2,7 @@ import { Environment, MeshReflectorMaterial } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { Suspense } from "react";
 
-import { ModelCrowd } from "./character";
-import { PandaCrowd } from "./panda";
+import { Crowd } from "./crowd";
 
 export function Scene() {
   return (
@@ -12,13 +11,13 @@ export function Scene() {
       camera={{ position: [10, 12, 12], fov: 25 }}
       style={{ background: "transparent", position: "fixed" }}
       gl={{ alpha: true, antialias: true }}
+      dpr={[0.5, 1.5]}
     >
-      <fog attach="fog" args={["#0c0a09", 15, 25]} />
+      <fog attach="fog" args={["#0c0a09", 15, 27]} />
 
       <ambientLight intensity={0.6} />
       <Suspense fallback={null}>
-        <ModelCrowd count={30} />
-        <PandaCrowd count={2} />
+        <Crowd />
       </Suspense>
       <mesh rotation={[-Math.PI / 2, 0, 0]}>
         <planeGeometry args={[50, 50]} />

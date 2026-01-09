@@ -20,7 +20,7 @@ type GLTFResult = GLTF & {
     mixamorigHips: THREE.Bone;
   };
   materials: {
-    "Material.001": THREE.MeshStandardMaterial;
+    "Material.002": THREE.MeshStandardMaterial;
   };
   animations: GLTFAction[];
 };
@@ -32,7 +32,7 @@ interface ModelProps {
   scale?: number;
 }
 
-const WALK_SPEED = 3;
+const WALK_SPEED = 1.2;
 const MAX_Z = 8.5;
 
 export function Model({
@@ -42,7 +42,7 @@ export function Model({
   ...props
 }: ModelProps) {
   const group = React.useRef<THREE.Group>(null);
-  const { scene, animations } = useGLTF("/models/panda-transformed.glb");
+  const { scene, animations } = useGLTF("/models/monkey-transformed.glb");
   const clone = React.useMemo(() => SkeletonUtils.clone(scene), [scene]);
   const { nodes, materials } = useGraph(clone) as unknown as GLTFResult;
   const { actions, names } = useAnimations(animations, group);
@@ -99,14 +99,14 @@ export function Model({
         <primitive object={hitboxGeometry} />
       </mesh>
       <group name="Scene">
-        <group name="Armature" rotation={[Math.PI / 2, 0, 0]} scale={1}>
+        <group name="Armature001" rotation={[Math.PI / 2, 0, 0]} scale={1}>
           <primitive object={nodes.mixamorigHips} />
         </group>
         <skinnedMesh
           raycast={() => null}
           name="material001"
           geometry={nodes.material001.geometry}
-          material={materials["Material.001"]}
+          material={materials["Material.002"]}
           skeleton={nodes.material001.skeleton}
           rotation={[Math.PI / 2, 0, 0]}
           scale={1}
@@ -116,4 +116,4 @@ export function Model({
   );
 }
 
-useGLTF.preload("/models/panda-transformed.glb");
+useGLTF.preload("/models/monkey-transformed.glb");
