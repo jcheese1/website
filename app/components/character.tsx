@@ -118,9 +118,8 @@ export function Model({
           e.stopPropagation();
           setCurrentAnimation(animation === "Wave" ? "Walk" : "Wave");
         }}
-      >
-        <primitive object={hitboxGeometry} />
-      </mesh>
+        geometry={hitboxGeometry}
+      />
       <group name="Scene">
         <group name="Armature" rotation={[Math.PI / 2, 0, 0]} scale={0.01}>
           <primitive object={nodes.mixamorigHips} />

@@ -95,9 +95,8 @@ export function Model({
           e.stopPropagation();
           setCurrentAnimation(animation === "Run" ? "Hiphop_Dance" : "Run");
         }}
-      >
-        <primitive object={hitboxGeometry} />
-      </mesh>
+        geometry={hitboxGeometry}
+      />
       <group name="Scene">
         <group name="Armature001" rotation={[Math.PI / 2, 0, 0]} scale={1}>
           <primitive object={nodes.mixamorigHips} />
