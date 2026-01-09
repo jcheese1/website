@@ -6,7 +6,7 @@ import { useFrame, useGraph } from "@react-three/fiber";
 import React, { useEffect, useState } from "react";
 import { SkeletonUtils } from "three-stdlib";
 
-type ActionName = "Walk" | "Break_Dance" | "Wave";
+type ActionName = "Hiphop_Dance" | "Run";
 
 interface GLTFAction extends THREE.AnimationClip {
   name: ActionName;
@@ -37,48 +37,22 @@ export function Model({
   ...props
 }: ModelProps) {
   const group = React.useRef<THREE.Group>(null);
-  const { scene, animations } = useGLTF("/models/me-transformed.glb");
+  const { scene, animations } = useGLTF("/models/panda-transformed.glb");
   const clone = React.useMemo(() => SkeletonUtils.clone(scene), [scene]);
   const { nodes, materials } = useGraph(clone) as unknown as GLTFResult;
   const { actions, names } = useAnimations(animations, group);
-  const [animation, setCurrentAnimation] = React.useState<
-    "Walk" | "Break_Dance" | "Wave"
-  >("Walk");
+  const [animation, setCurrentAnimation] = React.useState<ActionName>("Run");
 
-  const walkSpeed = 0.8;
+  const walkSpeed = 3;
   const startZ = -10 - zOffset;
 
   const maxZ = 8.5;
 
-  const isWalking = animation === "Walk";
+  const isRunning = animation === "Run";
 
   const [hovered, setHovered] = useState(false);
 
   useCursor(hovered);
-
-  useEffect(() => {
-    const danceInterval = setInterval(() => {
-      if (isWalking && Math.random() < 0.1) {
-        setCurrentAnimation("Break_Dance");
-      }
-    }, 3000);
-
-    return () => clearInterval(danceInterval);
-  }, [isWalking]);
-
-  useEffect(() => {
-    if (isWalking) return;
-
-    const stopAnimationTimeout = setTimeout(
-      () => {
-        if (Math.random() > 0.7) return;
-        setCurrentAnimation("Walk");
-      },
-      2000 + Math.random() * 1000
-    );
-
-    return () => clearTimeout(stopAnimationTimeout);
-  }, [isWalking, animation]);
 
   useEffect(() => {
     const currentAnimation = actions[animation] ?? actions[names?.[0] ?? ""];
@@ -93,7 +67,7 @@ export function Model({
   }, [actions, names, animation]);
 
   useFrame((_, delta) => {
-    if (group.current && isWalking) {
+    if (group.current && isRunning) {
       group.current.position.z += walkSpeed * delta;
 
       if (group.current.position.z > maxZ) {
@@ -118,13 +92,15 @@ export function Model({
         onPointerLeave={() => setHovered(false)}
         onClick={(e) => {
           e.stopPropagation();
-          setCurrentAnimation(animation === "Wave" ? "Walk" : "Wave");
+          console.log("clicked", animation);
+          setCurrentAnimation(animation === "Run" ? "Hiphop_Dance" : "Run");
         }}
       >
         <boxGeometry args={[0.5, 0.7, 0.5]} />
+        <meshStandardMaterial color="red" wireframe />
       </mesh>
       <group name="Scene">
-        <group name="Armature" rotation={[Math.PI / 2, 0, 0]} scale={0.01}>
+        <group name="Armature" rotation={[Math.PI / 2, 0, 0]} scale={1}>
           <primitive object={nodes.mixamorigHips} />
         </group>
         <skinnedMesh
@@ -134,17 +110,17 @@ export function Model({
           material={materials["Material.001"]}
           skeleton={nodes.material001.skeleton}
           rotation={[Math.PI / 2, 0, 0]}
-          scale={0.01}
+          scale={1}
         />
       </group>
     </group>
   );
 }
 
-export function ModelCrowd({ count }: { count: number }) {
+export function PandaCrowd({ count }: { count: number }) {
   const instances = React.useMemo(() => {
     const items = [];
-    const spreadX = 18;
+    const spreadX = 10;
     const maxZOffset = 10;
 
     for (let i = 0; i < count; i++) {
@@ -163,7 +139,7 @@ export function ModelCrowd({ count }: { count: number }) {
   }, [count]);
 
   return (
-    <group position={[0, 1.1, 0]}>
+    <group position={[0, 1, 0]}>
       {instances.map((instance) => (
         <Model
           key={instance.key}
@@ -176,4 +152,4 @@ export function ModelCrowd({ count }: { count: number }) {
   );
 }
 
-useGLTF.preload("/models/me-transformed.glb");
+useGLTF.preload("/models/panda-transformed.glb");

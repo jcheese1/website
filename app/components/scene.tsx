@@ -3,6 +3,7 @@ import { Canvas } from "@react-three/fiber";
 import { Suspense } from "react";
 
 import { ModelCrowd } from "./character";
+import { PandaCrowd } from "./panda";
 
 export function Scene() {
   return (
@@ -17,6 +18,7 @@ export function Scene() {
       <ambientLight intensity={0.6} />
       <Suspense fallback={null}>
         <ModelCrowd count={30} />
+        <PandaCrowd count={2} />
       </Suspense>
       <mesh rotation={[-Math.PI / 2, 0, 0]}>
         <planeGeometry args={[50, 50]} />
